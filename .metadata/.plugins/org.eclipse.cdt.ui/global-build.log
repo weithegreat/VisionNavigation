@@ -1,0 +1,169 @@
+18:08:25 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+Finished building target: FaceDetect
+ 
+18:08:28 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+make: Nothing to be done for `all'.
+
+**** Build of configuration Release for project Hello ****
+
+Nothing to build for project Hello
+18:44:01 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+../FaceDetect.cpp:5:1: error: expected ‘;’ before ‘int’
+ int main() {
+ ^
+make: *** [FaceDetect.o] Error 1
+
+**** Build of configuration Release for project Hello ****
+
+Nothing to build for project Hello
+18:44:25 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+../FaceDetect.cpp:5:1: error: expected ‘;’ before ‘int’
+ int main() {
+ ^
+make: *** [FaceDetect.o] Error 1
+18:44:33 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+Finished building: ../FaceDetect.cpp
+ 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+18:44:54 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+18:45:00 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+18:45:01 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+18:45:40 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+Finished building: ../FaceDetect.cpp
+ 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+18:54:41 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+../FaceDetect.cpp:16:23: fatal error: opencv\cv.h: No such file or directory
+ #include <opencv\cv.h>
+                       ^
+compilation terminated.
+make: *** [FaceDetect.o] Error 1
+18:57:50 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+Finished building: ../FaceDetect.cpp
+ 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+Finished building target: FaceDetect
+ 
+19:02:13 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+Finished building: ../FaceDetect.cpp
+ 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+19:03:02 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+Finished building: ../FaceDetect.cpp
+ 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+19:06:09 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+Finished building: ../FaceDetect.cpp
+ 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1
+19:06:38 **** Incremental Build of configuration Release for project FaceDetect ****
+make all 
+Building file: ../FaceDetect.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/opencv -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"FaceDetect.d" -MT"FaceDetect.d" -o "FaceDetect.o" "../FaceDetect.cpp"
+Finished building: ../FaceDetect.cpp
+ 
+Building target: FaceDetect
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "FaceDetect"  ./FaceDetect.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_objdetect
+/usr/bin/ld: ./FaceDetect.o: undefined reference to symbol '_ZN2cv6imreadERKNS_6StringEi'
+//usr/local/lib/libopencv_imgcodecs.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [FaceDetect] Error 1

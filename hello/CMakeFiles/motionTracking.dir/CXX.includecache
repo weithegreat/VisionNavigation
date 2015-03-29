@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/wei/opencv/hello/motionTracking.cpp
+opencv2/imgcodecs.hpp
+/home/wei/opencv/hello/opencv2/imgcodecs.hpp
+opencv2/highgui.hpp
+/home/wei/opencv/hello/opencv2/highgui.hpp
+opencv2/imgproc.hpp
+/home/wei/opencv/hello/opencv2/imgproc.hpp
+opencv2/core/utility.hpp
+/home/wei/opencv/hello/opencv2/core/utility.hpp
+opencv2/highgui/highgui_c.h
+/home/wei/opencv/hello/opencv2/highgui/highgui_c.h
+stdio.h
+-
+

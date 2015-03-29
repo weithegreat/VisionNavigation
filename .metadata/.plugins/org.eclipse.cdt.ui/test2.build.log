@@ -1,0 +1,12 @@
+17:17:29 **** Incremental Build of configuration Debug for project test2 ****
+make all 
+Building target: test2
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -o "test2"  ./src/test2.o   -lopencv_core -lopencv_imgcodecs -lopencv_highgui
+/usr/bin/ld: ./src/test2.o: undefined reference to symbol '_ZN2cv8cvtColorERKNS_11_InputArrayERKNS_12_OutputArrayEii'
+//usr/local/lib/libopencv_imgproc.so.3.0: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status
+make: *** [test2] Error 1
+
+17:17:29 Build Finished (took 55ms)
+

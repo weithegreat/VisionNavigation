@@ -1,0 +1,1 @@
+FaceDetect.d: ../FaceDetect.cpp

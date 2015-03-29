@@ -1,0 +1,11 @@
+#include <opencv2/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+using namespace cv;
+int main() {
+	Mat image = imread("1.jpg");
+	namedWindow("Jiang Zhuxi");
+	imshow("My Image", image);
+
+	waitKey(5000);
+}
