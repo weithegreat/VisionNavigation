@@ -1,3 +1,20 @@
+/*------------------------------------------------------------------------------------------*\
+   This file contains material supporting chapter 7 of the cookbook:  
+   Computer Vision Programming using the OpenCV Library. 
+   by Robert Laganiere, Packt Publishing, 2011.
+
+   This program is free software; permission is hereby granted to use, copy, modify, 
+   and distribute this source code, or portions thereof, for any purpose, without fee, 
+   subject to the restriction that the copyright notice may not be removed 
+   or altered from any source or altered source distribution. 
+   The software is released on an as-is basis and without any warranties of any kind. 
+   In particular, the software is not guaranteed to be fault-tolerant or free from failure. 
+   The author disclaims all warranties with regard to this software, any use, 
+   and any consequent failure, is purely the responsibility of the user.
+ 
+   Copyright (C) 2010-2011 Robert Laganiere, www.laganiere.name
+\*------------------------------------------------------------------------------------------*/
+
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
@@ -26,11 +43,6 @@
 using namespace std;
 using namespace cv;
 const int MAX_FEATURES = 500;
-vector<Point2f> pointsToTrack;
-vector<Vec2f> linesToTrack;
-double thres = 200;
-float alpha = 0.04;
-int blockSize = 3;
 
 void drawLine(Mat& imgOutput, vector<Vec2f> lines) {
 
@@ -116,7 +128,7 @@ vector<float> getPixelMatrix(Mat& img, int x, int y) {
 
 }
 
-float getCriteria(Mat& frame, int x, int y) {
+float getCriteria(Mat& frame, int blockSize, float alpha, int x, int y) {
   // get the criteria number of a block
 
   //if the block size in near the corner of the image
@@ -146,85 +158,8 @@ float getCriteria(Mat& frame, int x, int y) {
 
 }
 
-void processFirstFrameCorner(Mat& first_frame) {
-
-	//process the first frame to get the feature points 
-	// and feature lines
-
-    float lineDev = 0.05;
-	int blockSize = 2;
-	int apertureSize = 3;
-  	int pointNum;
-  	int minPointNum = 2;
-	double k = 0.04;
-
-	vector<Vec2f> lines;
-	vector<Point2f> featurePoints;
-	vector<Point2f> pointsToTrackTmp;
-	Mat first_canny;
-  //extract points for the first frame
-  	goodFeaturesToTrack(first_frame, featurePoints, MAX_FEATURES, 0.1, 0.2 );
-
-  //extract lines for the first frame
-  	Canny(first_frame,first_canny, 0.4*thres, thres);
-  	HoughLines(first_canny, lines, 1,CV_PI/180, 20);
-
-
-  // fit featurePoints into the line
-  	for (size_t i = 0; i <lines.size(); i++) {
-    //search every line, if there is points fitting in the line
-
-
-	    pointNum = 0;
-	    // clear the tmp vector for the next search;
-	    pointsToTrackTmp.clear();
-	    float theta = lines[i][1];
-	    float rho = lines[i][0];
-
-
-	    for(int j = 0; j < featurePoints.size(); j++) {
-	    	if(featurePoints[j].x*cos(theta) + featurePoints[j].y*sin(theta) < (rho+lineDev) &&
-	       	featurePoints[j].x*cos(theta) + featurePoints[j].y*sin(theta) > (rho-lineDev)){
-	        //if fit the line, cout the pointNum
-	        pointNum ++;
-	        //store these points that are in a line
-	        pointsToTrackTmp.push_back(featurePoints[j]);
-	      }
-    }
-
-    // if pointNum greater than a certain number, keep the line;
-    if(pointNum > minPointNum) {
-      linesToTrack.push_back(lines[i]);
-      pointsToTrack.insert(pointsToTrack.end(), pointsToTrackTmp.begin(), pointsToTrackTmp.end());
-    }
-
-  }
-}
-
-void processFirstFrame(Mat &first_frame) {
-
-	vector<Vec2f> lines;
-	Mat first_canny;
-	 //extract lines for the first frame
-  	Canny(first_frame,first_canny, 0.4*thres, thres);
-  	HoughLines(first_canny, lines, 1,CV_PI/180, 20);
-
-    for (size_t i = 0; i <lines.size(); i++) {
-
-	    float theta = lines[i][1];
-	    float rho = lines[i][0];
-	    double a = cos(theta), b =sin(theta);
-	    for(int x = 0; x < first_frame.cols(); x++) {
-	    	for(int y = 0; y < first_frame.row(); y++) {
-	    		if(x*a + y*b < (rho+lineDev) || x*a + y*b > (rho-lineDev)){
-
-	    			if()
-	    		}
-	    	}
-	    }
-  	}
-
-
+void processFirstFrame(Mat& firstFrame) {
+  
 }
 
 int main()
@@ -243,20 +178,69 @@ int main()
     Mat first_frame, first_canny;
     namedWindow("Video Camera");
 
+    // if(!capture.read(prev_frame)) return 1;
+
+    // // Convernto to gray image
+    // cvtColor(prev_frame, prev_frame, COLOR_BGR2GRAY);
+
+	double thres = 200;
+	// Canny(Input,OutCountour, 0.4*thres, thres);
 
 	vector<Vec2f> lines;
+	vector<Point2f> featurePoints;
+  vector<Point2f> pointsToTrack, pointsToTrackTmp;
+  vector<Vec2f> linesToTrack;
+
   //line deviation
- 	float lineDev = 0.05;
+  float lineDev = 0.05;
 
 	int blockSize = 2;
 	int apertureSize = 3;
+  int pointNum;
+  int minPointNum = 2;
 	double k = 0.04;
 
   //deal with the first frame
-  	if(!capture.read(first_frame)) return 1;
-  	cvtColor(first_frame,first_frame,COLOR_BGR2GRAY);
+  if(!capture.read(first_frame)) return 1;
+  cvtColor(first_frame,first_frame,COLOR_BGR2GRAY);
 
-  	processFirstFrameCorner(first_frame);
+  //extract points for the first frame
+  goodFeaturesToTrack(first_frame, featurePoints, MAX_FEATURES, 0.1, 0.2 );
+
+  //extract lines for the first frame
+  Canny(first_frame,first_canny, 0.4*thres, thres);
+  HoughLines(first_canny, lines, 1,CV_PI/180, 20);
+
+
+  // fit featurePoints into the line
+  for (size_t i = 0; i <lines.size(); i++) {
+    //search every line, if there is points fitting in the line
+
+
+    pointNum = 0;
+    // clear the tmp vector for the next search;
+    pointsToTrackTmp.clear();
+    float theta = lines[i][1];
+    float rho = lines[i][0];
+
+
+    for(int j = 0; j < featurePoints.size(); j++) {
+      if(featurePoints[j].x*cos(theta) + featurePoints[j].y*sin(theta) < (rho+lineDev) &&
+       featurePoints[j].x*cos(theta) + featurePoints[j].y*sin(theta) > (rho-lineDev)){
+        //if fit the line, cout the pointNum
+        pointNum ++;
+        //store these points that are in a line
+        pointsToTrackTmp.push_back(featurePoints[j]);
+      }
+    }
+
+    // if pointNum greater than a certain number, keep the line;
+    if(pointNum > minPointNum) {
+      linesToTrack.push_back(lines[i]);
+      pointsToTrack.insert(pointsToTrack.end(), pointsToTrackTmp.begin(), pointsToTrackTmp.end());
+    }
+
+  }
 
     while(!finish){
 
@@ -278,7 +262,7 @@ int main()
         // cout<<grad.at(1)<<endl;
 
         drawLine(imgOutput, linesToTrack);
-        drawLine(imgOutput, lines);
+        // drawLine(imgOutput, lines);
         drawPoint(imgOutput, pointsToTrack);
         // drawPoint(imgOutput, featurePoints);
 
