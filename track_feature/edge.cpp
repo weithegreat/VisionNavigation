@@ -25,12 +25,21 @@
 
 using namespace std;
 using namespace cv;
+
+// Criteria numbers
 const int MAX_FEATURES = 500;
 vector<Point2f> pointsToTrack;
 vector<Vec2f> linesToTrack;
 double thres = 200;
 float alpha = 0.04;
 int blockSize = 3;
+
+
+const float critNum = 1e-7;
+const int minPointNum = 4;
+const float lineDev = 0.05;
+const int HoughLineCriteria = 80;
+const int apertureSize = 3;
 
 void drawLine(Mat& imgOutput, vector<Vec2f> lines) {
 
@@ -116,7 +125,36 @@ vector<float> getPixelMatrix(Mat& img, int x, int y) {
 
 }
 
-float getCriteria(Mat& frame, int x, int y) {
+float getCriteria(Mat& first_frame, int x, int y) {
+
+	Mat Mc;
+
+	Mat TestOut = Mat::zeros( first_frame.size(), CV_32FC(6) );
+	Mc = Mat::zeros( first_frame.size(), CV_32FC1 );
+	cornerEigenValsAndVecs( first_frame, TestOut, blockSize, apertureSize, BORDER_DEFAULT );
+
+	float lambda_1 = TestOut.at<Vec6f>(x, y)[0];
+    float lambda_2 = TestOut.at<Vec6f>(x, y)[1];
+    return (lambda_1*lambda_2 - alpha*pow( ( lambda_1 + lambda_2 ), 2 ));
+
+
+  	// for( int j = 0; j < first_frame.rows; j++ )
+   //   { for( int i = 0; i < first_frame.cols; i++ )
+   //        {
+   //          float lambda_1 = TestOut.at<Vec6f>(j, i)[0];
+   //          float lambda_2 = TestOut.at<Vec6f>(j, i)[1];
+   //          Mc.at<float>(j,i) = lambda_1*lambda_2 - alpha*pow( ( lambda_1 + lambda_2 ), 2 );
+          	
+   //        	// cout<<Mc.at<float>(j,i)<<endl;
+   //        	if(Mc.at<float>(j,i)>1e-7) cout<<"Find: "<<Mc.at<float>(j,i)<<endl;
+   //        }
+   //   }
+}
+
+
+float getCriteria_back(Mat& frame, int x, int y) {
+// cout<<"Begin getCriteria ----------------------------------------------\n";
+// cout<<x<<", "<<y<<endl;
   // get the criteria number of a block
 
   //if the block size in near the corner of the image
@@ -135,14 +173,20 @@ float getCriteria(Mat& frame, int x, int y) {
 
   for(int i = 0; i < blockSize; i++) {
     for(int j = 0; j < blockSize; j++) {
-      blockIntense[i][j] = getPixelMatrix(frame, x-i, y-j);
-      Matrix11 += (blockIntense[i][j].at(0))*(blockIntense[i][j].at(0));
-      Matrix22 += (blockIntense[i][j].at(1))*(blockIntense[i][j].at(1));
-      Matrix12 += (blockIntense[i][j].at(1))*(blockIntense[i][j].at(0));
+    	int xpos = x-(blockSize-1)/2+i;
+    	int ypos = y-(blockSize-1)/2+j;
+      	blockIntense[i][j] = getPixelMatrix(frame, xpos, ypos);
+      	// cout<<"Intense: "<<blockIntense[i][j].at(0)<<", "<<blockIntense[i][j].at(1)<<endl;
+      	Matrix11 = Matrix11+(blockIntense[i][j].at(0))*(blockIntense[i][j].at(0));
+      	Matrix22 = Matrix22+(blockIntense[i][j].at(1))*(blockIntense[i][j].at(1));
+      	Matrix12 = Matrix12+(blockIntense[i][j].at(1))*(blockIntense[i][j].at(0));
+      	// cout<<"Matrix Numbers: "<<Matrix11<<","<<Matrix12<<","<<Matrix22<<endl;
     }
   }
 
-  return ((Matrix11*Matrix22-Matrix12*Matrix12)-alpha*(Matrix11+Matrix22));
+  cout<<"Matrix Numbers: "<<Matrix11<<","<<Matrix12<<","<<Matrix22<<endl;
+  // cout<<((Matrix11*Matrix22-Matrix12*Matrix12)-alpha*(Matrix11+Matrix22)*(Matrix11+Matrix22))<<endl;
+  return ((Matrix11*Matrix22-Matrix12*Matrix12)-alpha*(Matrix11+Matrix22)*(Matrix11+Matrix22));
 
 }
 
@@ -150,13 +194,7 @@ void processFirstFrameCorner(Mat& first_frame) {
 
 	//process the first frame to get the feature points 
 	// and feature lines
-
-    float lineDev = 0.05;
-	int blockSize = 2;
-	int apertureSize = 3;
   	int pointNum;
-  	int minPointNum = 2;
-	double k = 0.04;
 
 	vector<Vec2f> lines;
 	vector<Point2f> featurePoints;
@@ -203,22 +241,42 @@ void processFirstFrameCorner(Mat& first_frame) {
 
 void processFirstFrame(Mat &first_frame) {
 
-	vector<Vec2f> lines;
+	vector<Vec2f> getLines;
+	vector<Point2f> pointsToTrackTmp;
+	int pointNum;
 	Mat first_canny;
 	 //extract lines for the first frame
   	Canny(first_frame,first_canny, 0.4*thres, thres);
-  	HoughLines(first_canny, lines, 1,CV_PI/180, 20);
+  	HoughLines(first_canny, getLines, 1,CV_PI/180, HoughLineCriteria);
 
-    for (size_t i = 0; i <lines.size(); i++) {
+  	// Mat TestOut = first_frame;
+  	// drawLine(TestOut,getLines);
+  	// namedWindow("Test");
+  	// imshow("Test", TestOut);
 
-	    float theta = lines[i][1];
-	    float rho = lines[i][0];
+    for (size_t i = 0; i <getLines.size(); i++) {
+    	pointNum = 0;
+    	pointsToTrackTmp.clear();
+
+	    float theta = getLines[i][1];
+	    float rho = getLines[i][0];
 	    double a = cos(theta), b =sin(theta);
-	    for(int x = 0; x < first_frame.cols(); x++) {
-	    	for(int y = 0; y < first_frame.row(); y++) {
-	    		if(x*a + y*b < (rho+lineDev) || x*a + y*b > (rho-lineDev)){
+	    // for every line, search points in the pixel
+	    for(int x = 0; x < first_frame.rows; x++) {
+	    	for(int y = 0; y < first_frame.cols; y++) {
+	    		if((x*a + y*b < (rho+lineDev)) && (x*a + y*b > (rho-lineDev))){
+	    			//find it's a point in the line
+	    			//extract the points in the line above the criteria number
+	    			// cout<<x<<", "<<y<<endl;
+	    			if(getCriteria(first_frame, x, y) > critNum) {
+	    				pointNum++;
+	    				pointsToTrackTmp.push_back(Point2f(x,y));
+	    			}
 
-	    			if()
+	    			if(pointNum > minPointNum) {
+	    				linesToTrack.push_back(getLines[i]);
+	    				pointsToTrack.insert(pointsToTrack.end(),pointsToTrackTmp.begin(), pointsToTrackTmp.end());
+	    			}
 	    		}
 	    	}
 	    }
@@ -241,22 +299,19 @@ int main()
     Mat OutCountour;
     Mat imgOutput;
     Mat first_frame, first_canny;
+    
     namedWindow("Video Camera");
 
 
 	vector<Vec2f> lines;
-  //line deviation
- 	float lineDev = 0.05;
 
-	int blockSize = 2;
-	int apertureSize = 3;
 	double k = 0.04;
 
   //deal with the first frame
   	if(!capture.read(first_frame)) return 1;
   	cvtColor(first_frame,first_frame,COLOR_BGR2GRAY);
 
-  	processFirstFrameCorner(first_frame);
+  	processFirstFrame(first_frame);
 
     while(!finish){
 
@@ -271,14 +326,14 @@ int main()
         // Detect Maximum Movement with Lucas-Kanade Method
         // maxMovementLK(prev_frame, frame);
         Canny(frame,OutCountour, 0.4*thres, thres);
-        HoughLines(OutCountour, lines, 1,CV_PI/180, 80);
+        HoughLines(OutCountour, lines, 1,CV_PI/180, HoughLineCriteria);
 
         // vector<float> grad = getPixelMatrix(frame, 20, 20);
         // cout<<grad.at(0)<<", ";
         // cout<<grad.at(1)<<endl;
 
         drawLine(imgOutput, linesToTrack);
-        drawLine(imgOutput, lines);
+        // drawLine(imgOutput, lines);
         drawPoint(imgOutput, pointsToTrack);
         // drawPoint(imgOutput, featurePoints);
 
