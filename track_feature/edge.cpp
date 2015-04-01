@@ -35,7 +35,7 @@ double thres = 200;
 float alpha = 0.04;
 int blockSize = 3;
 
-
+const int camnum = 1;
 const float critNum = 1e-7;
 const int minPointNum = 3;
 const float lineDev = 0.03;
@@ -315,7 +315,7 @@ int main()
 {
 	 
 
-	VideoCapture capture(0);
+	VideoCapture capture(camnum);
 
     // Check if video camera is opened
     if(!capture.isOpened()) return 1;
@@ -355,6 +355,7 @@ int main()
         if(pointsToTrack.empty()) {
         	first_frame = frame;
         	processFirstFrame(frame);
+        	// processFirstFrameCorner(frame);
         	continue;
         }
 
