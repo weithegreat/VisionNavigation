@@ -30,16 +30,20 @@ using namespace cv;
 const int MAX_FEATURES = 500;
 vector<Point2f> pointsToTrack;
 vector<Vec2f> linesToTrack;
+vector<Point2f> new_points;
 double thres = 200;
 float alpha = 0.04;
 int blockSize = 3;
 
 
 const float critNum = 1e-7;
-const int minPointNum = 4;
+const int minPointNum = 3;
 const float lineDev = 0.03;
 const int HoughLineCriteria = 80;
 const int apertureSize = 3;
+const int max_level = 3;
+const int flags = 0;
+const double min_eigT = 0.01;
 
 void drawLine(Mat& imgOutput, vector<Vec2f> lines) {
 
@@ -294,6 +298,19 @@ void processFirstFrame(Mat &first_frame) {
 
 }
 
+void TrackLine(Mat& first_frame, Mat& frame) {
+
+    vector<uchar> status;
+    vector<float> err;
+    TermCriteria criteria(TermCriteria::COUNT | TermCriteria::EPS, 20, 0.03);
+    Size window(10,10);
+
+    // 3-Lucas-Kanade method for optical flow
+    calcOpticalFlowPyrLK(first_frame, frame, pointsToTrack, new_points, status, err, window, max_level, criteria, flags, min_eigT );
+
+
+}
+
 int main()
 {
 	 
@@ -314,13 +331,13 @@ int main()
 
 	vector<Vec2f> lines;
 
-	double k = 0.04;
+	// double k = 0.04;
 
-  //deal with the first frame
-  	if(!capture.read(first_frame)) return 1;
-  	cvtColor(first_frame,first_frame,COLOR_BGR2GRAY);
+  // //deal with the first frame
+  // 	if(!capture.read(first_frame)) return 1;
+  // 	cvtColor(first_frame,first_frame,COLOR_BGR2GRAY);
 
-  	processFirstFrame(first_frame);
+  // 	processFirstFrame(first_frame);
 
     while(!finish){
 
@@ -332,6 +349,15 @@ int main()
         // Convernto to gray image
         cvtColor(frame,frame,COLOR_BGR2GRAY);
 
+        // if didn't get the feature points, get it!
+        // And Set it as the first frame
+
+        if(pointsToTrack.empty()) {
+        	first_frame = frame;
+        	processFirstFrame(frame);
+        	continue;
+        }
+
         // Detect Maximum Movement with Lucas-Kanade Method
         // maxMovementLK(prev_frame, frame);
         Canny(frame,OutCountour, 0.4*thres, thres);
@@ -340,11 +366,11 @@ int main()
         // vector<float> grad = getPixelMatrix(frame, 20, 20);
         // cout<<grad.at(0)<<", ";
         // cout<<grad.at(1)<<endl;
-
+        TrackLine(first_frame, frame);
         drawLine(imgOutput, linesToTrack);
         // drawLine(imgOutput, lines);
+        drawPoint(imgOutput, new_points);
         drawPoint(imgOutput, pointsToTrack);
-        // drawPoint(imgOutput, featurePoints);
 
         // imshow("Video Camera", OutCountour);
         imshow("Video Camera", imgOutput);
