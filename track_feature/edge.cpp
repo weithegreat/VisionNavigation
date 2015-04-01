@@ -37,7 +37,7 @@ int blockSize = 3;
 
 const float critNum = 1e-7;
 const int minPointNum = 4;
-const float lineDev = 0.05;
+const float lineDev = 0.03;
 const int HoughLineCriteria = 80;
 const int apertureSize = 3;
 
@@ -253,6 +253,11 @@ void processFirstFrame(Mat &first_frame) {
   	// drawLine(TestOut,getLines);
   	// namedWindow("Test");
   	// imshow("Test", TestOut);
+	Mat Mc;
+
+	Mat TestOut = Mat::zeros( first_frame.size(), CV_32FC(6) );
+	Mc = Mat::zeros( first_frame.size(), CV_32FC1 );
+	cornerEigenValsAndVecs( first_frame, TestOut, blockSize, apertureSize, BORDER_DEFAULT );
 
     for (size_t i = 0; i <getLines.size(); i++) {
     	pointNum = 0;
@@ -261,6 +266,7 @@ void processFirstFrame(Mat &first_frame) {
 	    float theta = getLines[i][1];
 	    float rho = getLines[i][0];
 	    double a = cos(theta), b =sin(theta);
+
 	    // for every line, search points in the pixel
 	    for(int x = 0; x < first_frame.rows; x++) {
 	    	for(int y = 0; y < first_frame.cols; y++) {
@@ -268,7 +274,10 @@ void processFirstFrame(Mat &first_frame) {
 	    			//find it's a point in the line
 	    			//extract the points in the line above the criteria number
 	    			// cout<<x<<", "<<y<<endl;
-	    			if(getCriteria(first_frame, x, y) > critNum) {
+	    			float lambda_1 = TestOut.at<Vec6f>(x, y)[0];
+    				float lambda_2 = TestOut.at<Vec6f>(x, y)[1];
+    				float CriteriaNumber = lambda_1*lambda_2 - alpha*pow( ( lambda_1 + lambda_2 ), 2 );
+	    			if(CriteriaNumber > critNum) {
 	    				pointNum++;
 	    				pointsToTrackTmp.push_back(Point2f(x,y));
 	    			}
