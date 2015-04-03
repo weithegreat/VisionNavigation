@@ -43,7 +43,12 @@ const int HoughLineCriteria = 80;
 const int apertureSize = 3;
 const int max_level = 3;
 const int flags = 0;
-const double min_eigT = 0.01;
+const double min_eigT = 0.001;
+const Size subPixWinSize(10,10);
+TermCriteria criteria(TermCriteria::COUNT | TermCriteria::EPS, 20, 0.03);
+
+
+vector<Point2f> temp;
 
 void drawLine(Mat& imgOutput, vector<Vec2f> lines) {
 
@@ -208,8 +213,10 @@ void processFirstFrameCorner(Mat& first_frame) {
 	vector<Point2f> pointsToTrackTmp;
 	Mat first_canny;
   //extract points for the first frame
-  	goodFeaturesToTrack(first_frame, featurePoints, MAX_FEATURES, 0.1, 0.2 );
+  	goodFeaturesToTrack(first_frame, featurePoints, MAX_FEATURES, 0.01, 10, Mat(), 3, 0, 0.04 );
+    cornerSubPix(first_frame, featurePoints, subPixWinSize, Size(-1,-1),criteria);
 
+    temp = featurePoints;
   //extract lines for the first frame
   	Canny(first_frame,first_canny, 0.4*thres, thres);
   	HoughLines(first_canny, lines, 1,CV_PI/180, 20);
@@ -315,11 +322,12 @@ vector<Point2f> TrackLine(Mat& first_frame, Mat& frame) {
 	vector<Point2f> new_points;
     vector<uchar> status;
     vector<float> err;
-    TermCriteria criteria(TermCriteria::COUNT | TermCriteria::EPS, 20, 0.03);
-    Size window(10,10);
+    Size window(31,31);
 
     // 3-Lucas-Kanade method for optical flow
-    calcOpticalFlowPyrLK(first_frame, frame, pointsToTrack, new_points, status, err, window, max_level, criteria, flags, min_eigT );
+    // calcOpticalFlowPyrLK(first_frame, frame, pointsToTrack, new_points, status, err, window, max_level, criteria, flags, min_eigT );
+    //for testing the tracking
+    calcOpticalFlowPyrLK(first_frame, frame, temp, new_points, status, err, window, max_level, criteria, flags, min_eigT );
 
     return new_points;
 
@@ -387,10 +395,11 @@ int main()
         // cout<<grad.at(0)<<", ";
         // cout<<grad.at(1)<<endl;
         new_points = TrackLine(first_frame, frame);
-        drawLine(imgOutput, linesToTrack);
+        // drawLine(imgOutput, linesToTrack);
         // drawLine(imgOutput, lines);
         drawPoint(imgOutput, new_points);
-        drawPoint(imgOutput, pointsToTrack);
+        // drawPoint(imgOutput, pointsToTrack);
+        // drawPoint(imgOutput, temp);
 
         // imshow("Video Camera", OutCountour);
         imshow("Video Camera", imgOutput);
