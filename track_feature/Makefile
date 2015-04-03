@@ -99,6 +99,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named DisplayImage
+
+# Build rule for target.
+DisplayImage: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 DisplayImage
+.PHONY : DisplayImage
+
+# fast build rule for target.
+DisplayImage/fast:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/build
+.PHONY : DisplayImage/fast
+
+#=============================================================================
 # Target rules for targets named edge
 
 # Build rule for target.
@@ -110,6 +123,30 @@ edge: cmake_check_build_system
 edge/fast:
 	$(MAKE) -f CMakeFiles/edge.dir/build.make CMakeFiles/edge.dir/build
 .PHONY : edge/fast
+
+DisplayImage.o: DisplayImage.cpp.o
+.PHONY : DisplayImage.o
+
+# target to build an object file
+DisplayImage.cpp.o:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/DisplayImage.cpp.o
+.PHONY : DisplayImage.cpp.o
+
+DisplayImage.i: DisplayImage.cpp.i
+.PHONY : DisplayImage.i
+
+# target to preprocess a source file
+DisplayImage.cpp.i:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/DisplayImage.cpp.i
+.PHONY : DisplayImage.cpp.i
+
+DisplayImage.s: DisplayImage.cpp.s
+.PHONY : DisplayImage.s
+
+# target to generate assembly for a file
+DisplayImage.cpp.s:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/DisplayImage.cpp.s
+.PHONY : DisplayImage.cpp.s
 
 edge.o: edge.cpp.o
 .PHONY : edge.o
@@ -141,9 +178,13 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... DisplayImage"
 	@echo "... edge"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... DisplayImage.o"
+	@echo "... DisplayImage.i"
+	@echo "... DisplayImage.s"
 	@echo "... edge.o"
 	@echo "... edge.i"
 	@echo "... edge.s"

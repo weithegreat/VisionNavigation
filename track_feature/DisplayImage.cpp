@@ -1,158 +1,127 @@
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/core/utility.hpp"
+#include "opencv2/core/core.hpp"
 
-// #include "opencv2/imgcodecs.hpp"
-// #include "opencv2/highgui.hpp"
-// #include "opencv2/imgproc.hpp"
-// #include "opencv2/core/utility.hpp"
-// #include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui_c.h"
+#include "opencv2/videoio.hpp"
+#include "opencv2/video/tracking.hpp"
+#include <vector>
 
-// #include "opencv2/highgui/highgui_c.h"
-// #include "opencv2/videoio.hpp"
-// #include "opencv2/video/tracking.hpp"
-// #include <vector>
-
-// #include "opencv2/features2d/features2d.hpp"
-// #include "opencv2/calib3d/calib3d.hpp"
-
-
-// #include <stdio.h>
-// #include <stdlib.h> 
-// #include <iostream>
-// #include <iomanip> 
+#include "opencv2/features2d/features2d.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
 
 
-// using namespace std;
-// using namespace cv;
+#include <stdio.h>
+#include <stdlib.h> 
+#include <iostream>
+#include <iomanip> 
 
-// void maxMovementLK(Mat& prev_frame, Mat& frame){
-// 	vector<Point2f> initial_features;
-// 	goodFeaturesToTrack(prev_frame, initial_features, MAX_FEATURES, 0.1, 0.2);
-// 	vector<Point2f>new_features;
-// 	vector<uchar>status;
-// 	vector<float> err;
-// 	TermCriteria criteria(TermCriteria::COUNT | TermCriteria::EPS, 20, 0.03);
-// 	Size window(10, 10);
-// 	int max_level = 3;
-// 	int flags = 0;
-
-// 	double min_eigT = 0.004;
-
-// 	calcOpticalFlowPyrLK(prev_frame, frame, initial_features, 
-// 		new_features, status, err, window, max_level, criteria, flags, min_eigT);
-
-// 	double max_move = 0;
-// 	double movement = 0;
-// 	for (int i=0; i<initial_features.size(); i++) {
-// 		Point pointA (initial_features[i].x, initial_features[i].y);
-// 		Point pointB (new_features[i].x, new_features[i].y);
-
-// 		line(prev_frame, pointA, pointB, Scalar(255, 0, 0), 2);
-
-// 		movement = norm(pointA-pointB);
-// 		if(movement > max_move)
-// 			max_move = movement;
-// 	}
-
-// 	if(max_move > MAX_MOVEMENT){
-// 		putText(prev_frame, "INTRUDER", Point(100, 100), FONT_ITALIC, 3, Scalar(255,0,0), 5);
-// 		imshow("Video Camera", prev_frame);
-// 		cout<<"Press a key to continue..." <<endl;
-// 		waitKey();
-// 	}
-
-
-
-// }
-
-#include "opencv2/opencv.hpp"
 
 using namespace std;
 using namespace cv;
 
-const int MAX_FEATURES = 500;
-const int MAX_MOVEMENT = 1000;
+void processV(Mat &frame) {
+// 	Mat contours;
+// 	// Mat grayImage;
 
-void maxMovementLK(Mat& prev_frame, Mat& frame)
-{
-    // 1-Detect right features to apply the optical flow
-    vector<Point2f> initial_features;
-    goodFeaturesToTrack(prev_frame, initial_features, MAX_FEATURES, 0.1, 0.2 );
-    // cout<<initial_features[1].x<<endl;
-    // 2-Set the parameters
-    vector<Point2f> new_features;
-    vector<uchar> status;
-    vector<float> err;
-    TermCriteria criteria(TermCriteria::COUNT | TermCriteria::EPS, 20, 0.03);
-    Size window(10,10);
-    int max_level = 3;
-    int flags = 0;
-    double min_eigT = 0.004;
+	cvtColor(frame, frame, CV_RGB2GRAY);
+	GaussianBlur(frame, frame, Size(5,5), 1.5);
+	vector<Vec3f> circles;
 
-    // 3-Lucas-Kanade method for optical flow
-    calcOpticalFlowPyrLK(prev_frame, frame, initial_features, new_features, status, err, window, max_level, criteria, flags, min_eigT );
+	HoughCircles(frame, circles,CV_HOUGH_GRADIENT,
+		2,
+		50,
+		200,
+		100,
+		25, 100);
+	
+	int radius;
+	vector<Vec3f>::const_iterator itc = circles.begin();
+	while (itc != circles.end()) {
+		Point center((*itc)[0], (*itc)[1]);
+		circle(frame,
+		 center,
+			(*itc)[2],
+			Scalar(255),
+			2);
+		cout<<center.x<<"\t"<<center.y<<"\t"<<(*itc)[2]<<endl;
+		// cout<<'('<<center.x<<", "<<center.y<<") "<<"Radius="(*itc)[2]<<endl;
+		++itc;
+		// radius = cvRound((*itc)[2])
 
-    // 4-Show the results
-    double max_move = 0;
-    double movement = 0;
-    for(int i=0; i<initial_features.size(); i++)
-    {
-        Point pointA (initial_features[i].x, initial_features[i].y);
-        Point pointB(new_features[i].x, new_features[i].y);
-        line(prev_frame, pointA, pointB, Scalar(255,0,0), 2);
+	}
 
-        movement = norm(pointA-pointB);
-        if(movement > max_move)
-            max_move = movement;
-    }
-    if(max_move > MAX_MOVEMENT)
-    {
-        putText(prev_frame,"INTRUDER",Point(100,100),FONT_ITALIC,3,Scalar(255,0,0),5);
-        imshow("Video Camera", prev_frame);
-        cout << "Press a key to continue..." << endl;
-        waitKey();
-    }
+	// float x = static_cast<float>((*itc)[0]);
+	// float y = static_cast<float>((*itc)[1]);
+
+	// cout<<"( "<<x<<", "<<y<<" )\n";
+
 }
 
-int videoCamera()
+int main()
 {
-    // Open the video camera
-    VideoCapture capture(0);
+    VideoCapture cap(1); // open the video camera no. 0
 
-    // Check if video camera is opened
-    if(!capture.isOpened()) return 1;
-
-    bool finish = false;
-    Mat frame;
-    Mat prev_frame;
-    namedWindow("Video Camera");
-
-    if(!capture.read(prev_frame)) return 1;
-
-    // Convernto to gray image
-    cvtColor(prev_frame, prev_frame, COLOR_BGR2GRAY);
-
-    while(!finish){
-        // Read each frame, if possible
-        if(!capture.read(frame)) return 1;
-
-        // Convernto to gray image
-        cvtColor(frame,frame,COLOR_BGR2GRAY);
-
-        // Detect Maximum Movement with Lucas-Kanade Method
-        maxMovementLK(prev_frame, frame);
-
-        imshow("Video Camera", prev_frame);
-
-        // Press Esc to finish
-        if(waitKey(1)==27) finish = true;
-
-        prev_frame = frame;
+    if (!cap.isOpened())  // if not success, exit program
+    {
+        cout << "Cannot open the video cam" << endl;
+        return -1;
     }
-    // Release the video camera
-    capture.release();
+
+   // double dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
+   // double dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
+
+   //  cout << "Frame size : " << dWidth << " x " << dHeight << endl;
+
+   //  namedWindow("MyVideo",CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
+
+    while (1)
+    {
+        Mat frame;
+
+        // cap.read(frame);
+        // cap.read(frame);
+        bool bSuccess = cap.read(frame); // read a new frame from video
+
+         if (!bSuccess) //if not success, break loop
+        {
+             // cout << "Cannot read a frame from video stream" << endl;
+             break;
+        }
+
+        processV(frame);
+
+        imshow("MyVideo", frame); //show the frame in "MyVideo" window
+
+        if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+       {
+            // cout << "esc key is pressed by user" << endl;
+            break; 
+       }
+    }
     return 0;
-}
 
-int main( )
-{
-    videoCamera();
 }
+// int main() {
+// 	VideoCapture cap(0);
+// 	if(!cap.isOpened())
+// 		return 1;
+// 	// double rate = cap.get(C)
+
+// 	bool stop(false);
+// 	Mat frame;
+// 	namedWindow("video");
+// 	// int delay = 
+
+// 	while(!stop) {
+// 		if(!cap.read(frame))
+// 			break;
+// 		imshow("video", frame);
+// 		if(waitKey(30)==27) 
+// 			stop = true;
+// 	}
+
+// 	cap.release();
+// }
