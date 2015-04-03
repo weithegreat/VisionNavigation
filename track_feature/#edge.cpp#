@@ -3,7 +3,7 @@
  *
  * Wei Ding
  *
- * Last update 04/03/2015 14:27
+ * Last update 04/02/2015 11:37
  */
 
 #include "opencv2/imgcodecs.hpp"
@@ -38,8 +38,6 @@ using namespace cv;
 const int MAX_FEATURES = 500;
 vector<Point2f> pointsToTrack;
 vector<Vec2f> linesToTrack;
-Vec2f bestLine;
-vector<Point2f> bestPoints;
 // vector<Point2f> new_points;
 double thres = 200;
 float alpha = 0.04;
@@ -73,27 +71,6 @@ void drawLine(Mat& imgOutput, vector<Vec2f> lines) {
     line(imgOutput, pt1, pt2, Scalar(0,0,255), 1, 8);
 
   }
-
-}
-
-void drawLine(Mat& imgOutput, Vec2f lines) {
-	float theta = lines[1];
-    float rho = lines[0];
-    double a = cos(theta), b =sin(theta);
-    double x0 = a*rho, y0 = b*rho;
-    Point pt1(cvRound(x0 + 1000*(-b)), cvRound(y0 + 1000*(a)));
-
-    Point pt2(cvRound(x0 - 1000*(-b)), cvRound(y0 - 1000*(a)));
-    line(imgOutput, pt1, pt2, Scalar(0,0,255), 1, 8);
-
-}
-
-void drawLine(Mat& imgOutput, Vec4f lines) {
-	Point pt1(lines[2]-1000*lines[0], lines[3]-1000*lines[1]);
-	Point pt2(lines[2]+1000*lines[0], lines[3]+1000*lines[1]);
-
-	line( imgOutput, pt1, pt2, Scalar(0,0,255), 1, 8 );
-
 
 }
 
@@ -237,7 +214,7 @@ void processFirstFrameCorner(Mat& first_frame) {
 	 */
 	//process the first frame to get the feature points 
 	// and feature lines
-  	int pointNum, maxNum = 0;
+  	int pointNum;
 
 	vector<Vec2f> lines;
 	vector<Point2f> featurePoints;
@@ -277,13 +254,6 @@ void processFirstFrameCorner(Mat& first_frame) {
 
     // if pointNum greater than a certain number, keep the line;
     if(pointNum > minPointNum) {
-
-      if(pointNum > maxNum) {
-      	maxNum = pointNum;
-      	bestPoints = pointsToTrackTmp;
-      	bestLine = lines[i];
-      }
-
       linesToTrack.push_back(lines[i]);
       pointsToTrack.insert(pointsToTrack.end(), pointsToTrackTmp.begin(), pointsToTrackTmp.end());
     }
@@ -334,7 +304,7 @@ void processFirstFrame(Mat &first_frame) {
 	    		if((x*a + y*b < (rho+lineDev)) && (x*a + y*b > (rho-lineDev))){
 	    			//find it's a point in the line
 	    			//extract the points in the line above the criteria number
-	    			// cout<<x<<", "<<y<<endl;
+	track    			// cout<<x<<", "<<y<<endl;
 	    			float lambda_1 = TestOut.at<Vec6f>(x, y)[0];
     				float lambda_2 = TestOut.at<Vec6f>(x, y)[1];
     				float CriteriaNumber = lambda_1*lambda_2 - alpha*pow( ( lambda_1 + lambda_2 ), 2 );
@@ -365,16 +335,9 @@ vector<Point2f> TrackLine(Mat& first_frame, Mat& frame) {
     // 3-Lucas-Kanade method for optical flow
     // calcOpticalFlowPyrLK(first_frame, frame, pointsToTrack, new_points, status, err, window, max_level, criteria, flags, min_eigT );
     //for testing the tracking
-    calcOpticalFlowPyrLK(first_frame, frame, bestPoints, new_points, status, err, window, max_level, criteria, flags, min_eigT );
+    calcOpticalFlowPyrLK(first_frame, frame, temp, new_points, status, err, window, max_level, criteria, flags, min_eigT );
 
     return new_points;
-
-}
-
-Vec4f fitLinesToNewPoint(vector<Point2f> points) {
-	Vec4f newline;
-	fitLine(points,newline,CV_DIST_L1,0,0.01,0.01);
-	return newline;
 
 }
 
@@ -402,7 +365,6 @@ int main()
 
 	vector<Vec2f> lines;
 	vector<Point2f> new_points;
-	Vec4f NewLine;
 
 	// double k = 0.04;
 
@@ -427,8 +389,8 @@ int main()
 
         if(pointsToTrack.empty()) {
         	first_frame = frame;
-        	// processFirstFrame(frame);
-        	processFirstFrameCorner(frame);
+        	processFirstFrame(frame);
+        	// processFirstFrameCorner(frame);
         	continue;
         }
 
@@ -441,18 +403,9 @@ int main()
         // cout<<grad.at(0)<<", ";
         // cout<<grad.at(1)<<endl;
         new_points = TrackLine(first_frame, frame);
-        NewLine = fitLinesToNewPoint(new_points);
-
-        // drawLine(imgOutput, linesToTrack);
-        
-        drawLine(imgOutput, bestLine);
-        drawPoint(imgOutput,bestPoints);
-        drawLine(imgOutput, NewLine);
-        drawPoint(imgOutput, new_points);
         // drawLine(imgOutput, linesToTrack);
         // drawLine(imgOutput, lines);
-        // drawPoint(imgOutput, new_points);
-        // drawPoint = 
+        drawPoint(imgOutput, new_points);
         // drawPoint(imgOutput, pointsToTrack);
         // drawPoint(imgOutput, temp);
 
