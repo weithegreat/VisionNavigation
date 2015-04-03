@@ -30,13 +30,13 @@ using namespace cv;
 const int MAX_FEATURES = 500;
 vector<Point2f> pointsToTrack;
 vector<Vec2f> linesToTrack;
-vector<Point2f> new_points;
+// vector<Point2f> new_points;
 double thres = 200;
 float alpha = 0.04;
 int blockSize = 3;
 
-const int camnum = 1;
-const float critNum = 1e-7;
+const int camnum = 0;
+const float critNum = 1e-6;
 const int minPointNum = 3;
 const float lineDev = 0.03;
 const int HoughLineCriteria = 80;
@@ -195,7 +195,10 @@ float getCriteria_back(Mat& frame, int x, int y) {
 }
 
 void processFirstFrameCorner(Mat& first_frame) {
-
+	/**
+	 * get feature points through goodfeaturestotrack;
+	 * 
+	 */
 	//process the first frame to get the feature points 
 	// and feature lines
   	int pointNum;
@@ -243,7 +246,16 @@ void processFirstFrameCorner(Mat& first_frame) {
   }
 }
 
+// void processFirstFrameHarris(Mat &first_frame) {
+// 	Mat TestOut = Mat::zeros( first_frame.size(), CV_32FC(6) );
+// 	cornerHarris(first_frame, OutputArray dst, int blockSize, 
+// 		int ksize, double k, int borderType=BORDER_DEFAULT );
+// }
+
 void processFirstFrame(Mat &first_frame) {
+	/**
+	 * get feature points in a line through the criteria number
+	 */
 
 	vector<Vec2f> getLines;
 	vector<Point2f> pointsToTrackTmp;
@@ -298,8 +310,9 @@ void processFirstFrame(Mat &first_frame) {
 
 }
 
-void TrackLine(Mat& first_frame, Mat& frame) {
-
+vector<Point2f> TrackLine(Mat& first_frame, Mat& frame) {
+	// get the feature points in the new frame through optical flow;
+	vector<Point2f> new_points;
     vector<uchar> status;
     vector<float> err;
     TermCriteria criteria(TermCriteria::COUNT | TermCriteria::EPS, 20, 0.03);
@@ -308,6 +321,11 @@ void TrackLine(Mat& first_frame, Mat& frame) {
     // 3-Lucas-Kanade method for optical flow
     calcOpticalFlowPyrLK(first_frame, frame, pointsToTrack, new_points, status, err, window, max_level, criteria, flags, min_eigT );
 
+    return new_points;
+
+}
+
+float getYaw(vector<Point2f> newPoints) {
 
 }
 
@@ -330,6 +348,7 @@ int main()
 
 
 	vector<Vec2f> lines;
+	vector<Point2f> new_points;
 
 	// double k = 0.04;
 
@@ -367,7 +386,7 @@ int main()
         // vector<float> grad = getPixelMatrix(frame, 20, 20);
         // cout<<grad.at(0)<<", ";
         // cout<<grad.at(1)<<endl;
-        TrackLine(first_frame, frame);
+        new_points = TrackLine(first_frame, frame);
         drawLine(imgOutput, linesToTrack);
         // drawLine(imgOutput, lines);
         drawPoint(imgOutput, new_points);
