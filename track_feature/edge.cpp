@@ -1,3 +1,11 @@
+/**
+ * Extract feature points and feature lines 
+ *
+ * Wei Ding
+ *
+ * Last update 04/02/2015 11:37
+ */
+
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
