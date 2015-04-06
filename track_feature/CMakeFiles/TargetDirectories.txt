@@ -1,0 +1,3 @@
+/home/wei/opencv/track_feature/CMakeFiles/DisplayImage.dir
+/home/wei/opencv/track_feature/CMakeFiles/camshift.dir
+/home/wei/opencv/track_feature/CMakeFiles/edge.dir

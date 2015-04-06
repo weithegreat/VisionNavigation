@@ -112,6 +112,19 @@ DisplayImage/fast:
 .PHONY : DisplayImage/fast
 
 #=============================================================================
+# Target rules for targets named camshift
+
+# Build rule for target.
+camshift: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 camshift
+.PHONY : camshift
+
+# fast build rule for target.
+camshift/fast:
+	$(MAKE) -f CMakeFiles/camshift.dir/build.make CMakeFiles/camshift.dir/build
+.PHONY : camshift/fast
+
+#=============================================================================
 # Target rules for targets named edge
 
 # Build rule for target.
@@ -148,6 +161,30 @@ DisplayImage.cpp.s:
 	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/DisplayImage.cpp.s
 .PHONY : DisplayImage.cpp.s
 
+camshift.o: camshift.cpp.o
+.PHONY : camshift.o
+
+# target to build an object file
+camshift.cpp.o:
+	$(MAKE) -f CMakeFiles/camshift.dir/build.make CMakeFiles/camshift.dir/camshift.cpp.o
+.PHONY : camshift.cpp.o
+
+camshift.i: camshift.cpp.i
+.PHONY : camshift.i
+
+# target to preprocess a source file
+camshift.cpp.i:
+	$(MAKE) -f CMakeFiles/camshift.dir/build.make CMakeFiles/camshift.dir/camshift.cpp.i
+.PHONY : camshift.cpp.i
+
+camshift.s: camshift.cpp.s
+.PHONY : camshift.s
+
+# target to generate assembly for a file
+camshift.cpp.s:
+	$(MAKE) -f CMakeFiles/camshift.dir/build.make CMakeFiles/camshift.dir/camshift.cpp.s
+.PHONY : camshift.cpp.s
+
 edge.o: edge.cpp.o
 .PHONY : edge.o
 
@@ -179,12 +216,16 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... DisplayImage"
+	@echo "... camshift"
 	@echo "... edge"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... DisplayImage.o"
 	@echo "... DisplayImage.i"
 	@echo "... DisplayImage.s"
+	@echo "... camshift.o"
+	@echo "... camshift.i"
+	@echo "... camshift.s"
 	@echo "... edge.o"
 	@echo "... edge.i"
 	@echo "... edge.s"
