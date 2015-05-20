@@ -426,6 +426,7 @@ int main()
         // And Set it as the first frame
 
         if(pointsToTrack.empty()) {
+	  cout<<"Lost points!";
         	first_frame = frame;
         	// processFirstFrame(frame);
         	processFirstFrameCorner(frame);

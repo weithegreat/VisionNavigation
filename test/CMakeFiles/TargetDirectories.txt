@@ -1,0 +1,1 @@
+/home/wei/opencv/test/CMakeFiles/TestCam.dir
